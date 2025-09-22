@@ -1,4 +1,3 @@
-# smartpack_prototype
 SmartPack Prototype
 ===================
 
