@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="meta.title">SmartPack - Clever packen. Entspannt reisen.</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="SmartPack - Pack smart. Travel relaxed." data-i18n-attr="content" data-i18n="meta.title">
+    <meta property="og:description" content="SmartPack creates your individual packing list – based on destination, weather, activities and travel details." data-i18n-attr="content" data-i18n="meta.description">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://smartpack.app">
+
+    <!-- Favicon (SVG Data URI) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%2305FF88' d='M20 20h60v60H20z'/%3E%3Cpath fill='%230000FE' d='M30 30h40v40H30z'/%3E%3C/svg%3E">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes:wght@400&family=EB+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom CSS -->
+    <style>
+        .font-headline { font-family: 'Great Vibes', cursive; }
+        .font-body { font-family: 'EB Garamond', serif; }
+
+        /* Custom brand colors */
+        :root {
+            --brand-primary: #05FF88;
+            --brand-secondary: #0000FE;
+        }
+
+        .text-brand-primary { color: var(--brand-primary); }
+        .bg-brand-primary { background-color: var(--brand-primary); }
+        .text-brand-secondary { color: var(--brand-secondary); }
+        .bg-brand-secondary { background-color: var(--brand-secondary); }
+
+        /* Gradient backgrounds */
+        .bg-hero-gradient {
+            background: linear-gradient(135deg, var(--brand-secondary), var(--brand-primary));
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Custom animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Print styles for PDF export */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; }
+        }
+
+        .print-only { display: none; }
+
+        /* Mobile navigation overlay */
+        .mobile-nav-overlay {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* Language Switch */
+        .lang-switch {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+        }
+
+        .lang-switch button {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .lang-switch button.active {
+            background: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            color: var(--brand-secondary);
+        }
+
+        .lang-switch button:not(.active) {
+            color: #6b7280;
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-primary': '#05FF88',
+                        'brand-secondary': '#0000FE',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-body bg-white text-gray-900 overflow-x-hidden">
+
+    <!-- SECTION: Header (Sticky Mobile Navigation) -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 no-print">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="20" y="25" width="60" height="50" fill="#0000FE" rx="8"/>
+                        <rect x="25" y="30" width="50" height="15" fill="#05FF88" rx="4"/>
+                        <rect x="25" y="50" width="30" height="3" fill="#05FF88" rx="1.5"/>
+                        <rect x="25" y="57" width="35" height="3" fill="#05FF88" rx="1.5"/>
+                        <rect x="25" y="64" width="25" height="3" fill="#05FF88" rx="1.5"/>
+                        <circle cx="75" cy="75" r="8" fill="#05FF88"/>
+                    </svg>
+                    <span class="font-headline text-xl text-brand-secondary">SmartPack</span>
+                </div>
+
+                <!-- Language Switch -->
+                <div class="lang-switch mr-3">
+                    <button id="lang-de" class="lang-btn active" data-lang="de" aria-label="Deutsch">DE</button>
+                    <button id="lang-en" class="lang-btn" data-lang="en" aria-label="English">EN</button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="p-2 rounded-lg hover:bg-gray-100 transition-colors" aria-label="☰">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Overlay -->
+    <div id="mobile-nav-overlay" class="fixed inset-0 z-40 bg-black/50 mobile-nav-overlay opacity-0 pointer-events-none transition-opacity duration-300 no-print">
+        <div class="fixed right-0 top-0 bottom-0 w-80 max-w-full bg-white shadow-xl transform translate-x-full transition-transform duration-300">
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <span class="font-headline text-xl text-brand-secondary" data-i18n="nav.title">Navigation</span>
+                <button id="mobile-nav-close" class="p-2 rounded-lg hover:bg-gray-100 transition-colors" aria-label="✕">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="p-4">
+                <ul class="space-y-3">
+                    <li><a href="#hero" class="nav-link block py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors" data-i18n="nav.home">Start</a></li>
+                    <li><a href="#features" class="nav-link block py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors" data-i18n="nav.features">Funktionen</a></li>
+                    <li><a href="#how-it-works" class="nav-link block py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors" data-i18n="nav.howItWorks">So funktioniert's</a></li>
+                    <li><a href="#demo" class="nav-link block py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors" data-i18n="nav.demo">Demo</a></li>
+                    <li><a href="#personas" class="nav-link block py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors" data-i18n="nav.personas">Personas</a></li>
+                    <li><a href="#faq" class="nav-link block py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors" data-i18n="nav.faq">FAQ</a></li>
+                    <li><a href="#contact" class="nav-link block py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors" data-i18n="nav.contact">Kontakt</a></li>
+                </ul>
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <button class="cta-primary w-full bg-brand-primary text-black font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity" data-i18n="cta.startPacking">
+                        Packliste starten
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <main class="pt-16">
+
+        <!-- SECTION: Hero -->
+        <section id="hero" class="relative min-h-screen bg-hero-gradient flex items-center justify-center overflow-hidden">
+            <div class="container mx-auto px-4 text-center relative z-10">
+                <div class="max-w-2xl mx-auto animate-fade-in-up">
+                    <h1 class="font-headline text-4xl md:text-6xl text-white mb-4 mt-8" data-i18n="hero.title">Clever packen</h1>
+                    <h2 class="text-xl md:text-2xl text-white/90 mb-6 font-semibold" data-i18n="hero.subtitle">Entspannt reisen.</h2>
+                    <p class="text-lg text-white/80 mb-8 leading-relaxed" data-i18n="hero.description">
+                        SmartPack erstellt deine individuelle Packliste – basierend auf Reiseziel, Wetter, Aktivitäten und Reisedetails. In wenigen Klicks zur perfekten Vorbereitung, ohne etwas zu vergessen.
+                    </p>
+
+                    <!-- CTAs -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                        <button class="cta-primary bg-brand-primary text-black font-semibold py-3 px-8 rounded-lg hover:opacity-90 transition-opacity w-full sm:w-auto" data-i18n="cta.startNow">
+                            Packliste jetzt starten
+                        </button>
+                        <button class="cta-secondary border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-brand-secondary transition-colors w-full sm:w-auto" data-i18n="cta.testFamily">
+                            Für Familien testen
+                        </button>
+                    </div>
+
+                    <!-- Social Proof Badge -->
+                    <div class="relative inline-block">
+                        <button id="social-proof-btn" class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm hover:bg-white/30 transition-colors" data-i18n="hero.socialProof">
+                            📊 24 Mio. Reisen/Jahr in der Schweiz
+                        </button>
+                        <div id="social-proof-tooltip" class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-white text-gray-800 text-xs px-3 py-2 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity" data-i18n="hero.socialProofTooltip">
+                            Großes Potenzial für SmartPack
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone Mockup -->
+                <div class="mt-12 flex justify-center">
+                    <div class="relative">
+                        <div class="w-48 h-96 bg-white/10 backdrop-blur-sm rounded-3xl p-2">
+                            <div class="w-full h-full bg-white rounded-2xl flex items-center justify-center">
+                                <svg class="w-20 h-20 text-brand-secondary" fill="currentColor" viewBox="0 0 100 100">
+                                    <rect x="15" y="20" width="70" height="60" rx="8" fill="currentColor"/>
+                                    <rect x="20" y="25" width="60" height="15" fill="#05FF88"/>
+                                    <rect x="20" y="45" width="40" height="3" fill="#05FF88"/>
+                                    <rect x="20" y="52" width="45" height="3" fill="#05FF88"/>
+                                    <rect x="20" y="59" width="35" height="3" fill="#05FF88"/>
+                                    <rect x="20" y="66" width="50" height="3" fill="#05FF88"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Features (Interactive Tabs) -->
+        <section id="features" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-semibold mb-4" data-i18n="features.title">Warum SmartPack?</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-i18n="features.subtitle">
+                        Automatisch generierte, personalisierte Packlisten mit allem was du brauchst
+                    </p>
+                </div>
+
+                <!-- Feature Tabs -->
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex flex-wrap justify-center mb-8 bg-white rounded-xl p-2 shadow-sm">
+                        <button class="feature-tab active px-4 py-3 text-sm font-medium rounded-lg transition-colors flex-1 min-w-0" data-tab="automatic" data-i18n="features.tab.automatic">
+                            Automatisch
+                        </button>
+                        <button class="feature-tab px-4 py-3 text-sm font-medium rounded-lg transition-colors flex-1 min-w-0" data-tab="customize" data-i18n="features.tab.customize">
+                            Anpassen
+                        </button>
+                        <button class="feature-tab px-4 py-3 text-sm font-medium rounded-lg transition-colors flex-1 min-w-0" data-tab="weather" data-i18n="features.tab.weather">
+                            Wetter & Aktivitäten
+                        </button>
+                        <button class="feature-tab px-4 py-3 text-sm font-medium rounded-lg transition-colors flex-1 min-w-0" data-tab="export" data-i18n="features.tab.export">
+                            PDF/Teilen
+                        </button>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div class="feature-content">
+                        <div id="automatic" class="tab-pane active bg-white rounded-xl p-8 shadow-lg">
+                            <div class="flex flex-col md:flex-row items-center gap-8">
+                                <div class="flex-1">
+                                    <div class="w-16 h-16 bg-brand-primary rounded-full flex items-center justify-center mb-4">
+                                        <svg class="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18z"/>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-2xl font-semibold mb-3" data-i18n="features.automatic.title">Vollautomatische Listen</h3>
+                                    <p class="text-gray-600 mb-4" data-i18n="features.automatic.description">
+                                        Basierend auf deinem Reiseziel, der Dauer und dem Transportmittel erstellt SmartPack automatisch eine passende Grundliste.
+                                    </p>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <div class="text-sm text-gray-500 mb-2" data-i18n="features.automatic.exampleTitle">Beispiel-Generierung:</div>
+                                        <div class="space-y-1 text-sm">
+                                            <div data-i18n="features.automatic.example1">📍 Paris, 3 Tage → <span class="text-brand-secondary font-medium">Städtetrip-Essentials</span></div>
+                                            <div data-i18n="features.automatic.example2">✈️ Flugreise → <span class="text-brand-secondary font-medium">Handgepäck-optimiert</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="customize" class="tab-pane bg-white rounded-xl p-8 shadow-lg hidden">
+                            <div class="flex flex-col md:flex-row items-center gap-8">
+                                <div class="flex-1">
+                                    <div class="w-16 h-16 bg-brand-secondary rounded-full flex items-center justify-center mb-4">
+                                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-2xl font-semibold mb-3" data-i18n="features.customize.title">Jederzeit anpassbar</h3>
+                                    <p class="text-gray-600 mb-4" data-i18n="features.customize.description">
+                                        Füge eigene Items hinzu, entferne unnötige Sachen oder markiere wichtige Gegenstände. Deine Liste, deine Regeln.
+                                    </p>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <div class="text-sm text-gray-500 mb-2" data-i18n="features.customize.optionsTitle">Anpassungsoptionen:</div>
+                                        <div class="space-y-1 text-sm">
+                                            <div data-i18n="features.customize.option1">➕ <span class="text-brand-secondary font-medium">Eigene Items hinzufügen</span></div>
+                                            <div data-i18n="features.customize.option2">⭐ <span class="text-brand-secondary font-medium">Wichtige markieren</span></div>
+                                            <div data-i18n="features.customize.option3">🗑️ <span class="text-brand-secondary font-medium">Unnötige entfernen</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="weather" class="tab-pane bg-white rounded-xl p-8 shadow-lg hidden">
+                            <div class="flex flex-col md:flex-row items-center gap-8">
+                                <div class="flex-1">
+                                    <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4">
+                                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26A6.995 6.995 0 0 0 19 9a7 7 0 0 0-7-7zM9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"/>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-2xl font-semibold mb-3" data-i18n="features.weather.title">Wetter-aware & aktivitätsbasiert</h3>
+                                    <p class="text-gray-600 mb-4" data-i18n="features.weather.description">
+                                        SmartPack berücksichtigt das Wetter am Zielort und deine geplanten Aktivitäten für die perfekte Ausrüstung.
+                                    </p>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <div class="text-sm text-gray-500 mb-2" data-i18n="features.weather.considersTitle">Berücksichtigt:</div>
+                                        <div class="grid grid-cols-2 gap-2 text-sm">
+                                            <div data-i18n="features.weather.item1">☀️ Wettervorhersage</div>
+                                            <div data-i18n="features.weather.item2">🏃‍♂️ Aktivitäten</div>
+                                            <div data-i18n="features.weather.item3">🏨 Unterkunftsart</div>
+                                            <div data-i18n="features.weather.item4">🎒 Reisestil</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="export" class="tab-pane bg-white rounded-xl p-8 shadow-lg hidden">
+                            <div class="flex flex-col md:flex-row items-center gap-8">
+                                <div class="flex-1">
+                                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-4">
+                                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                                            <polyline points="14,2 14,8 20,8"/>
+                                            <line x1="16" y1="13" x2="8" y2="13"/>
+                                            <line x1="16" y1="17" x2="8" y2="17"/>
+                                            <polyline points="10,9 9,9 8,9"/>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-2xl font-semibold mb-3" data-i18n="features.export.title">PDF in 1 Tap</h3>
+                                    <p class="text-gray-600 mb-4" data-i18n="features.export.description">
+                                        Exportiere deine fertige Packliste als PDF zum Ausdrucken oder teile sie mit Mitreisenden per Link.
+                                    </p>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <div class="text-sm text-gray-500 mb-2" data-i18n="features.export.optionsTitle">Export-Optionen:</div>
+                                        <div class="space-y-1 text-sm">
+                                            <div data-i18n="features.export.option1">📄 <span class="text-brand-secondary font-medium">PDF-Download</span></div>
+                                            <div data-i18n="features.export.option2">🔗 <span class="text-brand-secondary font-medium">Teilbarer Link</span></div>
+                                            <div data-i18n="features.export.option3">📧 <span class="text-brand-secondary font-medium">Per E-Mail senden</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: How It Works (Stepper) -->
+        <section id="how-it-works" class="py-20 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-semibold mb-4" data-i18n="howItWorks.title">So funktioniert's</h2>
+                    <p class="text-lg text-gray-600" data-i18n="howItWorks.subtitle">In 5 einfachen Schritten zur perfekten Packliste</p>
+                </div>
+
+                <!-- Desktop Stepper -->
+                <div class="hidden md:block max-w-6xl mx-auto">
+                    <div class="flex items-center justify-between mb-12">
+                        <div class="step-item active flex flex-col items-center cursor-pointer" data-step="1">
+                            <div class="step-circle w-12 h-12 rounded-full bg-brand-primary text-black font-semibold flex items-center justify-center mb-3">1</div>
+                            <div class="text-sm font-medium text-center" data-i18n="howItWorks.step1.title">Login/Registrierung</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-gray-300 mx-4">
+                            <div class="step-progress h-full bg-brand-primary w-0 transition-all duration-500"></div>
+                        </div>
+                        <div class="step-item flex flex-col items-center cursor-pointer" data-step="2">
+                            <div class="step-circle w-12 h-12 rounded-full bg-gray-300 text-gray-500 font-semibold flex items-center justify-center mb-3">2</div>
+                            <div class="text-sm font-medium text-center" data-i18n="howItWorks.step2.title">Reise erstellen</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-gray-300 mx-4"></div>
+                        <div class="step-item flex flex-col items-center cursor-pointer" data-step="3">
+                            <div class="step-circle w-12 h-12 rounded-full bg-gray-300 text-gray-500 font-semibold flex items-center justify-center mb-3">3</div>
+                            <div class="text-sm font-medium text-center" data-i18n="howItWorks.step3.title">Aktivitäten wählen</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-gray-300 mx-4"></div>
+                        <div class="step-item flex flex-col items-center cursor-pointer" data-step="4">
+                            <div class="step-circle w-12 h-12 rounded-full bg-gray-300 text-gray-500 font-semibold flex items-center justify-center mb-3">4</div>
+                            <div class="text-sm font-medium text-center" data-i18n="howItWorks.step4.title">Liste generieren</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-gray-300 mx-4"></div>
+                        <div class="step-item flex flex-col items-center cursor-pointer" data-step="5">
+                            <div class="step-circle w-12 h-12 rounded-full bg-gray-300 text-gray-500 font-semibold flex items-center justify-center mb-3">5</div>
+                            <div class="text-sm font-medium text-center">PDF-Export</div>
+                        </div>
+                    </div>
+
+                    <!-- Step Content -->
+                    <div class="step-content bg-gray-50 rounded-xl p-8">
+                        <div id="step-1" class="step-detail active">
+                            <h3 class="text-xl font-semibold mb-3" data-i18n="howItWorks.step1.heading">🔐 Schnelle Registrierung</h3>
+                            <p class="text-gray-600 mb-4" data-i18n="howItWorks.step1.description">Erstelle ein kostenloses Konto oder logge dich ein. Deine Packlisten werden automatisch gespeichert.</p>
+                            <div class="bg-white rounded-lg p-4 inline-block">
+                                <div class="text-sm text-gray-500 mb-2" data-i18n="howItWorks.step1.benefitsTitle">✨ Vorteile:</div>
+                                <ul class="text-sm space-y-1">
+                                    <li data-i18n="howItWorks.step1.benefit1">• Listen automatisch speichern</li>
+                                    <li data-i18n="howItWorks.step1.benefit2">• Auf allen Geräten verfügbar</li>
+                                    <li data-i18n="howItWorks.step1.benefit3">• Favoriten-Items merken</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div id="step-2" class="step-detail hidden">
+                            <h3 class="text-xl font-semibold mb-3" data-i18n="howItWorks.step2.heading">🌍 Reise planen</h3>
+                            <p class="text-gray-600 mb-4" data-i18n="howItWorks.step2.description">Gib dein Reiseziel, Zeitraum und Transportmittel an. SmartPack berücksichtigt diese Faktoren für deine Liste.</p>
+                            <div class="bg-white rounded-lg p-4 inline-block">
+                                <div class="text-sm text-gray-500 mb-2" data-i18n="howItWorks.step2.inputsTitle">📋 Angaben:</div>
+                                <ul class="text-sm space-y-1">
+                                    <li data-i18n="howItWorks.step2.input1">• Zielort und Dauer</li>
+                                    <li data-i18n="howItWorks.step2.input2">• Transportmittel</li>
+                                    <li data-i18n="howItWorks.step2.input3">• Unterkunftsart</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div id="step-3" class="step-detail hidden">
+                            <h3 class="text-xl font-semibold mb-3" data-i18n="howItWorks.step3.heading">🎯 Aktivitäten bestimmen</h3>
+                            <p class="text-gray-600 mb-4" data-i18n="howItWorks.step3.description">Wähle aus verschiedenen Kategorien: Wandern, Strand, Business, Nachtleben, Kultur und mehr.</p>
+                            <div class="bg-white rounded-lg p-4 inline-block">
+                                <div class="text-sm text-gray-500 mb-2" data-i18n="howItWorks.step3.categoriesTitle">🏃‍♂️ Kategorien:</div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded" data-i18n="howItWorks.step3.category1">Wandern</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded" data-i18n="howItWorks.step3.category2">Strand</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded" data-i18n="howItWorks.step3.category3">Business</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded" data-i18n="howItWorks.step3.category4">Kultur</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="step-4" class="step-detail hidden">
+                            <h3 class="text-xl font-semibold mb-3" data-i18n="howItWorks.step4.heading">📝 Packliste generieren</h3>
+                            <p class="text-gray-600 mb-4" data-i18n="howItWorks.step4.description">SmartPack erstellt automatisch deine personalisierte Liste. Du kannst sie sofort bearbeiten und anpassen.</p>
+                            <div class="bg-white rounded-lg p-4 inline-block">
+                                <div class="text-sm text-gray-500 mb-2" data-i18n="howItWorks.step4.featuresTitle">🤖 KI-Features:</div>
+                                <ul class="text-sm space-y-1">
+                                    <li data-i18n="howItWorks.step4.feature1">• Wettervorhersage einbeziehen</li>
+                                    <li data-i18n="howItWorks.step4.feature2">• Gepäckbeschränkungen beachten</li>
+                                    <li data-i18n="howItWorks.step4.feature3">• Persönliche Präferenzen lernen</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div id="step-5" class="step-detail hidden">
+                            <h3 class="text-xl font-semibold mb-3" data-i18n="howItWorks.step5.heading">📤 Export & Teilen</h3>
+                            <p class="text-gray-600 mb-4" data-i18n="howItWorks.step5.description">Exportiere als PDF, teile per Link oder drucke aus. Perfekt für die Reisevorbereitung.</p>
+                            <div class="bg-white rounded-lg p-4 inline-block">
+                                <div class="text-sm text-gray-500 mb-2" data-i18n="howItWorks.step5.optionsTitle">📊 Optionen:</div>
+                                <ul class="text-sm space-y-1">
+                                    <li data-i18n="howItWorks.step5.option1">• PDF mit SmartPack-Branding</li>
+                                    <li data-i18n="howItWorks.step5.option2">• Teilbarer Link für Mitreisende</li>
+                                    <li data-i18n="howItWorks.step5.option3">• Druckoptimierte Version</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex justify-center mt-8 space-x-4">
+                        <button id="step-prev" class="px-6 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled data-i18n="howItWorks.navigation.back">
+                            Zurück
+                        </button>
+                        <button id="step-next" class="px-6 py-2 bg-brand-primary text-black rounded-lg hover:opacity-90 transition-opacity" data-i18n="howItWorks.navigation.next">
+                            Weiter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Accordion -->
+                <div class="md:hidden space-y-4">
+                    <div class="accordion-item border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full px-4 py-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-brand-primary text-black font-semibold flex items-center justify-center text-sm">1</div>
+                                <span class="font-medium">Login/Registrierung</span>
+                            </div>
+                            <svg class="w-5 h-5 transform transition-transform accordion-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="p-4 bg-white">
+                                <p class="text-gray-600 mb-3">Erstelle ein kostenloses Konto oder logge dich ein. Deine Packlisten werden automatisch gespeichert.</p>
+                                <div class="text-sm text-brand-secondary">✨ Listen speichern • 📱 Geräte-sync • ⭐ Favoriten</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full px-4 py-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 font-semibold flex items-center justify-center text-sm">2</div>
+                                <span class="font-medium">Reise erstellen</span>
+                            </div>
+                            <svg class="w-5 h-5 transform transition-transform accordion-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="p-4 bg-white">
+                                <p class="text-gray-600 mb-3">Gib dein Reiseziel, Zeitraum und Transportmittel an. SmartPack berücksichtigt diese Faktoren für deine Liste.</p>
+                                <div class="text-sm text-brand-secondary">🌍 Zielort • ⏱️ Dauer • ✈️ Transport • 🏨 Unterkunft</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full px-4 py-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 font-semibold flex items-center justify-center text-sm">3</div>
+                                <span class="font-medium">Aktivitäten wählen</span>
+                            </div>
+                            <svg class="w-5 h-5 transform transition-transform accordion-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="p-4 bg-white">
+                                <p class="text-gray-600 mb-3">Wähle aus verschiedenen Kategorien: Wandern, Strand, Business, Nachtleben, Kultur und mehr.</p>
+                                <div class="text-sm text-brand-secondary">🏃‍♂️ Sport • 🏖️ Strand • 💼 Business • 🎭 Kultur</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full px-4 py-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 font-semibold flex items-center justify-center text-sm">4</div>
+                                <span class="font-medium">Liste generieren</span>
+                            </div>
+                            <svg class="w-5 h-5 transform transition-transform accordion-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="p-4 bg-white">
+                                <p class="text-gray-600 mb-3">SmartPack erstellt automatisch deine personalisierte Liste. Du kannst sie sofort bearbeiten und anpassen.</p>
+                                <div class="text-sm text-brand-secondary">🤖 KI-generiert • ☀️ Wetter-aware • ✏️ Bearbeitbar</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full px-4 py-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 font-semibold flex items-center justify-center text-sm">5</div>
+                                <span class="font-medium">PDF-Export</span>
+                            </div>
+                            <svg class="w-5 h-5 transform transition-transform accordion-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="p-4 bg-white">
+                                <p class="text-gray-600 mb-3">Exportiere als PDF, teile per Link oder drucke aus. Perfekt für die Reisevorbereitung.</p>
+                                <div class="text-sm text-brand-secondary">📄 PDF • 🔗 Teilen • 🖨️ Drucken</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Interactive Demo -->
+        <section id="demo" class="py-20 bg-gradient-to-b from-gray-50 to-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-semibold mb-4" data-i18n="demo.title">Live-Demo</h2>
+                    <p class="text-lg text-gray-600" data-i18n="demo.subtitle">Teste SmartPack mit echten Szenarien</p>
+                </div>
+
+                <div class="max-w-4xl mx-auto">
+                    <!-- Scenario Selector -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                        <label class="block text-sm font-medium mb-3" data-i18n="demo.scenarioLabel">Szenario wählen:</label>
+                        <select id="demo-scenario" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary">
+                            <option value="backpacker" data-i18n="demo.scenario.backpacker">Backpacker Asien (2 Wochen, Wandern/Strand/Nachtmärkte)</option>
+                            <option value="family" data-i18n="demo.scenario.family">Familien-Städtetrip Paris (2 Nächte)</option>
+                        </select>
+                    </div>
+
+                    <!-- Generated Packing List -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-semibold" data-i18n="demo.packingListTitle">Deine Packliste</h3>
+                            <div class="text-sm text-gray-500">
+                                <span id="checked-count">0</span> / <span id="total-count">0</span> <span data-i18n="demo.packedLabel">eingepackt</span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+                            <div id="progress-bar" class="bg-brand-primary h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Packing List -->
+                        <div id="packing-list" class="space-y-3 mb-6">
+                            <!-- Items will be inserted here by JavaScript -->
+                        </div>
+
+                        <!-- Add Custom Item -->
+                        <div class="border-t pt-6">
+                            <div class="flex gap-3">
+                                <input
+                                    id="custom-item-input"
+                                    type="text"
+                                    placeholder="Eigenes Item hinzufügen..."
+                                    data-i18n-attr="placeholder"
+                                    data-i18n="demo.addItemPlaceholder"
+                                    class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+                                />
+                                <button id="add-custom-item" class="px-6 py-3 bg-brand-secondary text-white rounded-lg hover:opacity-90 transition-opacity" data-i18n="demo.addItemButton">
+                                    Hinzufügen
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Export Button -->
+                        <div class="flex justify-center mt-8">
+                            <button id="export-pdf" class="px-8 py-4 bg-brand-primary text-black font-semibold rounded-lg hover:opacity-90 transition-opacity flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                </svg>
+                                <span data-i18n="demo.exportButton">Als PDF exportieren (Demo)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Print-only PDF Export Section -->
+        <div class="print-only">
+            <div class="text-center mb-8">
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <svg class="w-8 h-8 text-brand-secondary" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="20" y="25" width="60" height="50" fill="#0000FE" rx="8"/>
+                        <rect x="25" y="30" width="50" height="15" fill="#05FF88" rx="4"/>
+                        <rect x="25" y="50" width="30" height="3" fill="#05FF88" rx="1.5"/>
+                        <rect x="25" y="57" width="35" height="3" fill="#05FF88" rx="1.5"/>
+                        <rect x="25" y="64" width="25" height="3" fill="#05FF88" rx="1.5"/>
+                    </svg>
+                    <h1 class="text-2xl font-headline text-brand-secondary">SmartPack</h1>
+                </div>
+                <p class="text-gray-600">Packliste generiert mit SmartPack</p>
+            </div>
+            <div id="print-packing-list">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- SECTION: Personas -->
+        <section id="personas" class="py-20 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-semibold mb-4" data-i18n="personas.title">Für jeden Reisetyp</h2>
+                    <p class="text-lg text-gray-600" data-i18n="personas.subtitle">SmartPack passt sich deinem Reisestil an</p>
+                </div>
+
+                <div class="max-w-4xl mx-auto">
+                    <div class="grid md:grid-cols-2 gap-6">
+
+                        <!-- Jonas - Backpacker -->
+                        <div class="persona-card bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-lg active" data-persona="jonas">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-1" data-i18n="personas.jonas.name">Jonas (25)</h3>
+                                    <p class="text-gray-600 text-sm" data-i18n="personas.jonas.type">Digitaler Backpacker</p>
+                                </div>
+                                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-2xl">🎒</div>
+                            </div>
+
+                            <div class="persona-content">
+                                <div class="mb-4">
+                                    <h4 class="font-medium text-sm mb-2 text-gray-700" data-i18n="personas.jonas.needsTitle">Typische Bedürfnisse:</h4>
+                                    <ul class="space-y-1 text-sm text-gray-600">
+                                        <li data-i18n="personas.jonas.need1">• Schnell relevante Liste mit wenig Aufwand</li>
+                                        <li data-i18n="personas.jonas.need2">• Offline-Zugriff für entlegene Gebiete</li>
+                                        <li data-i18n="personas.jonas.need3">• Leichtgewicht-Fokus für Rucksackreisen</li>
+                                        <li data-i18n="personas.jonas.need4">• Flexibel anpassbar für spontane Änderungen</li>
+                                        <li data-i18n="personas.jonas.need5">• Export/Teilen für Travel-Buddies</li>
+                                    </ul>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h4 class="font-medium text-sm mb-2 text-gray-700" data-i18n="personas.jonas.itemsTitle">Empfohlene Items:</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-2 py-1 bg-blue-200 text-blue-800 text-xs rounded-full" data-i18n="personas.jonas.item1">Packwürfel</span>
+                                        <span class="px-2 py-1 bg-blue-200 text-blue-800 text-xs rounded-full" data-i18n="personas.jonas.item2">Reisehandtuch</span>
+                                        <span class="px-2 py-1 bg-blue-200 text-blue-800 text-xs rounded-full" data-i18n="personas.jonas.item3">Powerbank</span>
+                                    </div>
+                                </div>
+
+                                <button class="load-persona w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm" data-i18n="personas.jonas.loadButton">
+                                    Profil im Demo laden
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sandra & Marc - Familie -->
+                        <div class="persona-card bg-gradient-to-br from-pink-50 to-rose-100 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-lg" data-persona="family">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-1" data-i18n="personas.family.name">Sandra & Marc</h3>
+                                    <p class="text-gray-600 text-sm" data-i18n="personas.family.type">Familie mit 2 Kindern</p>
+                                </div>
+                                <div class="w-16 h-16 bg-pink-500 rounded-full flex items-center justify-center text-2xl">👨‍👩‍👧‍👦</div>
+                            </div>
+
+                            <div class="persona-content hidden">
+                                <div class="mb-4">
+                                    <h4 class="font-medium text-sm mb-2 text-gray-700" data-i18n="personas.family.needsTitle">Typische Bedürfnisse:</h4>
+                                    <ul class="space-y-1 text-sm text-gray-600">
+                                        <li data-i18n="personas.family.need1">• Familienspezifische Items für alle Altersgruppen</li>
+                                        <li data-i18n="personas.family.need2">• Übersichtliche Listen für komplexe Reisen</li>
+                                        <li data-i18n="personas.family.need3">• Export/Teilen für Aufgabenverteilung</li>
+                                        <li data-i18n="personas.family.need4">• Notfall- und Gesundheits-Checklisten</li>
+                                        <li data-i18n="personas.family.need5">• Unterhaltung für lange Reisezeiten</li>
+                                    </ul>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h4 class="font-medium text-sm mb-2 text-gray-700" data-i18n="personas.family.itemsTitle">Empfohlene Items:</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-2 py-1 bg-pink-200 text-pink-800 text-xs rounded-full" data-i18n="personas.family.item1">Reiseapotheke</span>
+                                        <span class="px-2 py-1 bg-pink-200 text-pink-800 text-xs rounded-full" data-i18n="personas.family.item2">Snacks</span>
+                                        <span class="px-2 py-1 bg-pink-200 text-pink-800 text-xs rounded-full" data-i18n="personas.family.item3">Spielzeug</span>
+                                    </div>
+                                </div>
+
+                                <button class="load-persona w-full py-2 px-4 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors text-sm" data-i18n="personas.family.loadButton">
+                                    Profil im Demo laden
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: FAQ -->
+        <section id="faq" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-semibold mb-4">Häufige Fragen</h2>
+                    <p class="text-lg text-gray-600">Alles was du über SmartPack wissen musst</p>
+                </div>
+
+                <div class="max-w-3xl mx-auto space-y-4">
+
+                    <div class="faq-item bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors flex items-center justify-between">
+                            <span class="font-medium">Wie entsteht die Packliste genau?</span>
+                            <svg class="w-5 h-5 transform transition-transform faq-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="px-6 pb-4 text-gray-600">
+                                SmartPack analysiert dein Reiseziel, die Dauer, das Wetter, deine Aktivitäten und das Transportmittel. Basierend auf diesen Daten und unserer Erfahrungsdatenbank erstellen wir eine personalisierte Liste, die du jederzeit anpassen kannst.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors flex items-center justify-between">
+                            <span class="font-medium">Kann ich Items mit Mitreisenden teilen?</span>
+                            <svg class="w-5 h-5 transform transition-transform faq-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="px-6 pb-4 text-gray-600">
+                                Ja! Du kannst deine Packliste per Link teilen oder als PDF exportieren. Mitreisende können Aufgaben übernehmen und Haken setzen - perfekt für Gruppenreisen oder Familienurlaube.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors flex items-center justify-between">
+                            <span class="font-medium">Funktioniert SmartPack auch offline?</span>
+                            <svg class="w-5 h-5 transform transition-transform faq-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="px-6 pb-4 text-gray-600">
+                                Deine erstellten Listen sind offline verfügbar. Du kannst sie bearbeiten, abhaken und als PDF exportieren - auch ohne Internetverbindung. Perfekt für Reisen in entlegene Gebiete.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors flex items-center justify-between">
+                            <span class="font-medium">Welche Daten nutzt SmartPack?</span>
+                            <svg class="w-5 h-5 transform transition-transform faq-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="px-6 pb-4 text-gray-600">
+                                Wir nutzen nur die Daten, die du eingibst: Reiseziel, Dauer, Aktivitäten und Transportmittel. Zusätzlich fragen wir Wetterdaten ab. Deine persönlichen Listen bleiben privat und werden nicht geteilt.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors flex items-center justify-between">
+                            <span class="font-medium">Ist SmartPack kostenlos?</span>
+                            <svg class="w-5 h-5 transform transition-transform faq-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="px-6 pb-4 text-gray-600">
+                                SmartPack bietet eine kostenlose Basisversion mit allen wichtigen Features. Für erweiterte Funktionen wie unbegrenzte Listen, Premium-Templates und erweiterte Sharing-Optionen gibt es ein günstiges Pro-Abo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors flex items-center justify-between">
+                            <span class="font-medium">Auf welchen Geräten läuft SmartPack?</span>
+                            <svg class="w-5 h-5 transform transition-transform faq-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="px-6 pb-4 text-gray-600">
+                                SmartPack funktioniert in jedem modernen Browser - auf Smartphone, Tablet und Desktop. Deine Listen werden automatisch zwischen allen Geräten synchronisiert.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors flex items-center justify-between">
+                            <span class="font-medium">Wie aktuell sind die Wetterinformationen?</span>
+                            <svg class="w-5 h-5 transform transition-transform faq-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300">
+                            <div class="px-6 pb-4 text-gray-600">
+                                Wir nutzen aktuelle Wettervorhersagen und historische Klimadaten für dein Reiseziel. Die Vorhersage wird regelmäßig aktualisiert, um deine Packliste anzupassen - auch kurz vor der Reise.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Sticky Bottom CTA -->
+    <div id="sticky-cta" class="fixed bottom-4 left-4 right-4 z-40 opacity-0 pointer-events-none transition-opacity duration-300 no-print">
+        <div class="bg-brand-primary text-black rounded-lg shadow-lg p-4 flex items-center justify-between">
+            <div class="flex-1 mr-4">
+                <div class="font-semibold text-sm">In 2 Minuten zur ersten Packliste</div>
+                <div class="text-xs opacity-75">Teste SmartPack jetzt kostenlos</div>
+            </div>
+            <button class="cta-primary bg-black text-brand-primary px-4 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity">
+                Starten
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2 no-print">
+        <!-- Toasts will be inserted here -->
+    </div>
+
+    <!-- SECTION: Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-12 no-print">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+
+                <!-- Brand -->
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <svg class="w-8 h-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="20" y="25" width="60" height="50" fill="#0000FE" rx="8"/>
+                            <rect x="25" y="30" width="50" height="15" fill="#05FF88" rx="4"/>
+                            <rect x="25" y="50" width="30" height="3" fill="#05FF88" rx="1.5"/>
+                            <rect x="25" y="57" width="35" height="3" fill="#05FF88" rx="1.5"/>
+                            <rect x="25" y="64" width="25" height="3" fill="#05FF88" rx="1.5"/>
+                        </svg>
+                        <span class="font-headline text-xl text-brand-primary">SmartPack</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Clever packen. Entspannt reisen.
+                    </p>
+                </div>
+
+                <!-- Navigation -->
+                <div>
+                    <h3 class="font-semibold mb-4">Navigation</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#hero" class="hover:text-brand-primary transition-colors">Start</a></li>
+                        <li><a href="#features" class="hover:text-brand-primary transition-colors">Funktionen</a></li>
+                        <li><a href="#how-it-works" class="hover:text-brand-primary transition-colors">So funktioniert's</a></li>
+                        <li><a href="#demo" class="hover:text-brand-primary transition-colors">Demo</a></li>
+                        <li><a href="#faq" class="hover:text-brand-primary transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h3 class="font-semibold mb-4">Kontakt</h3>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div>
+                            <a href="mailto:hello@smartpack.app" class="hover:text-brand-primary transition-colors">
+                                hello@smartpack.app
+                            </a>
+                        </div>
+                        <div class="pt-2">
+                            <a href="#" class="hover:text-brand-primary transition-colors mr-4">Datenschutz</a>
+                            <a href="#" class="hover:text-brand-primary transition-colors">Impressum</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; 2024 SmartPack. Made with ❤️ for travelers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Data for demo scenarios
+        const scenarios = {
+            backpacker: {
+                title: "Backpacker Asien (2 Wochen)",
+                items: [
+                    { name: "Rucksack (40-50L)", category: "basics" },
+                    { name: "Reisepass + Kopien", category: "documents" },
+                    { name: "Impfausweis", category: "documents" },
+                    { name: "Reiseversicherung", category: "documents" },
+                    { name: "3-4 T-Shirts", category: "clothing" },
+                    { name: "2 Shorts", category: "clothing" },
+                    { name: "1 lange Hose", category: "clothing" },
+                    { name: "Leichte Regenjacke", category: "clothing" },
+                    { name: "Wanderschuhe", category: "clothing" },
+                    { name: "Flip-Flops", category: "clothing" },
+                    { name: "Schnelltrocknendes Handtuch", category: "basics" },
+                    { name: "Powerbank (20.000mAh)", category: "electronics" },
+                    { name: "Mehrfachstecker", category: "electronics" },
+                    { name: "Smartphone + Ladegerät", category: "electronics" },
+                    { name: "Kopfhörer", category: "electronics" },
+                    { name: "Wasserflasche", category: "basics" },
+                    { name: "Erste-Hilfe-Set", category: "health" },
+                    { name: "Sonnencreme (LSF 50)", category: "health" },
+                    { name: "Insektenschutz", category: "health" },
+                    { name: "Durchfall-Tabletten", category: "health" },
+                    { name: "Packwürfel", category: "basics" },
+                    { name: "Vorhängeschloss", category: "basics" }
+                ]
+            },
+            family: {
+                title: "Familien-Städtetrip Paris (2 Nächte)",
+                items: [
+                    { name: "Reisekoffer", category: "basics" },
+                    { name: "Handgepäck für Flug", category: "basics" },
+                    { name: "Reisepässe (Familie)", category: "documents" },
+                    { name: "Kinderausweise", category: "documents" },
+                    { name: "Hotelbestätigung", category: "documents" },
+                    { name: "Wechselkleidung (3 Tage)", category: "clothing" },
+                    { name: "Warme Jacken", category: "clothing" },
+                    { name: "Bequeme Schuhe", category: "clothing" },
+                    { name: "Elegante Kleidung (Dinner)", category: "clothing" },
+                    { name: "Kinderspielzeug (Reise)", category: "kids" },
+                    { name: "Tablet + Kinderfilme", category: "electronics" },
+                    { name: "Ladegeräte", category: "electronics" },
+                    { name: "Kamera", category: "electronics" },
+                    { name: "Snacks für Kinder", category: "kids" },
+                    { name: "Reiseapotheke", category: "health" },
+                    { name: "Kindermedikamente", category: "health" },
+                    { name: "Sonnencreme", category: "health" },
+                    { name: "Stadtplan/Reiseführer", category: "misc" },
+                    { name: "Regenschirm", category: "misc" },
+                    { name: "Geldbörse + EC-Karte", category: "documents" }
+                ]
+            }
+        };
+
+        // DOM Elements
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+        const mobileNavClose = document.getElementById('mobile-nav-close');
+        const socialProofBtn = document.getElementById('social-proof-btn');
+        const socialProofTooltip = document.getElementById('social-proof-tooltip');
+        const demoScenario = document.getElementById('demo-scenario');
+        const packingList = document.getElementById('packing-list');
+        const customItemInput = document.getElementById('custom-item-input');
+        const addCustomItemBtn = document.getElementById('add-custom-item');
+        const exportPdfBtn = document.getElementById('export-pdf');
+        const stickyCta = document.getElementById('sticky-cta');
+        const toastContainer = document.getElementById('toast-container');
+
+        let currentItems = [];
+        let customItemCounter = 0;
+
+        // Mobile Navigation
+        if (mobileMenuBtn && mobileNavOverlay && mobileNavClose) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileNavOverlay.classList.remove('pointer-events-none');
+                mobileNavOverlay.classList.remove('opacity-0');
+                mobileNavOverlay.querySelector('.w-80').classList.remove('translate-x-full');
+            });
+
+            mobileNavClose.addEventListener('click', () => {
+                closeMobileNav();
+            });
+        } else {
+            console.error('Mobile navigation elements not found:', {
+                mobileMenuBtn: !!mobileMenuBtn,
+                mobileNavOverlay: !!mobileNavOverlay,
+                mobileNavClose: !!mobileNavClose
+            });
+        }
+
+        if (mobileNavOverlay) {
+            mobileNavOverlay.addEventListener('click', (e) => {
+                if (e.target === mobileNavOverlay) {
+                    closeMobileNav();
+                }
+            });
+        }
+
+        function closeMobileNav() {
+            if (mobileNavOverlay) {
+                mobileNavOverlay.querySelector('.w-80').classList.add('translate-x-full');
+                setTimeout(() => {
+                    mobileNavOverlay.classList.add('opacity-0');
+                    mobileNavOverlay.classList.add('pointer-events-none');
+                }, 300);
+            }
+        }
+
+        // Navigation links
+        document.querySelectorAll('.nav-link, a[href^="#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    closeMobileNav();
+                }
+            });
+        });
+
+        // Social Proof Tooltip
+        socialProofBtn.addEventListener('click', () => {
+            socialProofTooltip.classList.toggle('opacity-0');
+        });
+
+        // Feature Tabs
+        document.querySelectorAll('.feature-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and panes
+                document.querySelectorAll('.feature-tab').forEach(t => t.classList.remove('active', 'bg-brand-primary', 'text-black'));
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.add('hidden');
+                    pane.classList.remove('active');
+                });
+
+                // Add active class to clicked tab
+                tab.classList.add('active', 'bg-brand-primary', 'text-black');
+
+                // Show corresponding pane
+                const targetPane = document.getElementById(tab.dataset.tab);
+                if (targetPane) {
+                    targetPane.classList.remove('hidden');
+                    targetPane.classList.add('active');
+                }
+            });
+        });
+
+        // Initialize first tab as active
+        document.querySelector('.feature-tab').classList.add('bg-brand-primary', 'text-black');
+
+        // Desktop Stepper
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        function updateStep(step) {
+            currentStep = step;
+
+            // Update step circles
+            document.querySelectorAll('.step-item').forEach((item, index) => {
+                const circle = item.querySelector('.step-circle');
+                if (index + 1 <= currentStep) {
+                    item.classList.add('active');
+                    circle.classList.remove('bg-gray-300', 'text-gray-500');
+                    circle.classList.add('bg-brand-primary', 'text-black');
+                } else {
+                    item.classList.remove('active');
+                    circle.classList.remove('bg-brand-primary', 'text-black');
+                    circle.classList.add('bg-gray-300', 'text-gray-500');
+                }
+            });
+
+            // Update progress bars
+            document.querySelectorAll('.step-progress').forEach((progress, index) => {
+                if (index < currentStep - 1) {
+                    progress.style.width = '100%';
+                } else {
+                    progress.style.width = '0%';
+                }
+            });
+
+            // Update step details
+            document.querySelectorAll('.step-detail').forEach((detail, index) => {
+                if (index + 1 === currentStep) {
+                    detail.classList.remove('hidden');
+                    detail.classList.add('active');
+                } else {
+                    detail.classList.add('hidden');
+                    detail.classList.remove('active');
+                }
+            });
+
+            // Update navigation buttons
+            const prevBtn = document.getElementById('step-prev');
+            const nextBtn = document.getElementById('step-next');
+
+            if (prevBtn) prevBtn.disabled = currentStep === 1;
+            if (nextBtn) nextBtn.textContent = currentStep === totalSteps ? 'Fertig' : 'Weiter';
+        }
+
+        // Step navigation
+        document.querySelectorAll('.step-item').forEach((item, index) => {
+            item.addEventListener('click', () => updateStep(index + 1));
+        });
+
+        const stepPrev = document.getElementById('step-prev');
+        const stepNext = document.getElementById('step-next');
+
+        if (stepPrev) {
+            stepPrev.addEventListener('click', () => {
+                if (currentStep > 1) updateStep(currentStep - 1);
+            });
+        }
+
+        if (stepNext) {
+            stepNext.addEventListener('click', () => {
+                if (currentStep < totalSteps) updateStep(currentStep + 1);
+            });
+        }
+
+        // Mobile Accordion
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.closest('.accordion-item');
+                const content = item.querySelector('.accordion-content');
+                const chevron = header.querySelector('.accordion-chevron');
+                const isOpen = !content.classList.contains('max-h-0');
+
+                // Close all accordions
+                document.querySelectorAll('.accordion-item').forEach(otherItem => {
+                    const otherContent = otherItem.querySelector('.accordion-content');
+                    const otherChevron = otherItem.querySelector('.accordion-chevron');
+                    otherContent.classList.add('max-h-0');
+                    otherChevron.classList.remove('rotate-180');
+                });
+
+                // Open clicked accordion if it was closed
+                if (!isOpen) {
+                    content.classList.remove('max-h-0');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    chevron.classList.add('rotate-180');
+                }
+            });
+        });
+
+        // Demo functionality
+        function loadScenario(scenarioKey) {
+            const scenario = scenarios[scenarioKey];
+            if (!scenario) return;
+
+            currentItems = [...scenario.items];
+            renderPackingList();
+            showToast('Szenario geladen', 'success');
+        }
+
+        function renderPackingList() {
+            const checkedCount = currentItems.filter(item => item.checked).length;
+            const totalCount = currentItems.length;
+
+            document.getElementById('checked-count').textContent = checkedCount;
+            document.getElementById('total-count').textContent = totalCount;
+            document.getElementById('progress-bar').style.width = `${(checkedCount / totalCount) * 100}%`;
+
+            packingList.innerHTML = currentItems.map((item, index) => `
+                <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <input
+                        type="checkbox"
+                        id="item-${index}"
+                        class="w-5 h-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded"
+                        ${item.checked ? 'checked' : ''}
+                        onchange="toggleItem(${index})"
+                    />
+                    <label for="item-${index}" class="flex-1 cursor-pointer ${item.checked ? 'line-through text-gray-500' : ''}">
+                        ${item.name}
+                        ${item.custom ? ' <span class="text-xs bg-brand-secondary text-white px-2 py-0.5 rounded ml-2">Eigenes</span>' : ''}
+                    </label>
+                    ${item.custom ? `
+                        <button onclick="removeItem(${index})" class="text-red-500 hover:text-red-700 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function toggleItem(index) {
+            currentItems[index].checked = !currentItems[index].checked;
+            renderPackingList();
+
+            if (currentItems[index].checked) {
+                showToast('Abgehakt', 'success');
+            }
+        }
+
+        function removeItem(index) {
+            currentItems.splice(index, 1);
+            renderPackingList();
+            showToast('Item entfernt', 'info');
+        }
+
+        function addCustomItem() {
+            const itemName = customItemInput.value.trim();
+            if (!itemName) return;
+
+            currentItems.push({
+                name: itemName,
+                custom: true,
+                category: 'custom'
+            });
+
+            customItemInput.value = '';
+            renderPackingList();
+            showToast('Hinzugefügt', 'success');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+
+            toast.className = `${bgColor} text-white px-4 py-2 rounded-lg shadow-lg transform translate-x-full transition-all duration-300`;
+            toast.textContent = message;
+
+            toastContainer.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 10);
+
+            // Remove after delay
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (toastContainer.contains(toast)) {
+                        toastContainer.removeChild(toast);
+                    }
+                }, 300);
+            }, 2000);
+        }
+
+        // Event listeners
+        demoScenario.addEventListener('change', (e) => {
+            loadScenario(e.target.value);
+        });
+
+        addCustomItemBtn.addEventListener('click', addCustomItem);
+
+        customItemInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addCustomItem();
+            }
+        });
+
+        exportPdfBtn.addEventListener('click', () => {
+            // Prepare print content
+            const printList = document.getElementById('print-packing-list');
+            const scenario = scenarios[demoScenario.value];
+
+            printList.innerHTML = `
+                <h2 class="text-xl font-semibold mb-4">${scenario.title}</h2>
+                <div class="space-y-2">
+                    ${currentItems.map(item => `
+                        <div class="flex items-center space-x-2 p-2 border-b border-gray-200">
+                            <div class="w-4 h-4 border border-gray-400 rounded ${item.checked ? 'bg-brand-primary' : ''}"></div>
+                            <span class="${item.checked ? 'line-through text-gray-500' : ''}">${item.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mt-6 text-center text-sm text-gray-500">
+                    Erstellt mit SmartPack - smartpack.app
+                </div>
+            `;
+
+            // Trigger print
+            setTimeout(() => {
+                window.print();
+                showToast('PDF bereit (Demo)', 'success');
+            }, 100);
+        });
+
+        // Personas
+        document.querySelectorAll('.persona-card').forEach(card => {
+            card.addEventListener('click', () => {
+                // Toggle active state
+                document.querySelectorAll('.persona-card').forEach(c => {
+                    c.classList.remove('active');
+                    c.querySelector('.persona-content').classList.add('hidden');
+                });
+
+                card.classList.add('active');
+                card.querySelector('.persona-content').classList.remove('hidden');
+            });
+        });
+
+        document.querySelectorAll('.load-persona').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const persona = button.closest('.persona-card').dataset.persona;
+                const scenarioValue = persona === 'jonas' ? 'backpacker' : 'family';
+
+                demoScenario.value = scenarioValue;
+                loadScenario(scenarioValue);
+
+                // Scroll to demo
+                document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // FAQ
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.closest('.faq-item');
+                const answer = item.querySelector('.faq-answer');
+                const chevron = question.querySelector('.faq-chevron');
+                const isOpen = !answer.classList.contains('max-h-0');
+
+                // Close all FAQs
+                document.querySelectorAll('.faq-item').forEach(otherItem => {
+                    const otherAnswer = otherItem.querySelector('.faq-answer');
+                    const otherChevron = otherItem.querySelector('.faq-chevron');
+                    otherAnswer.classList.add('max-h-0');
+                    otherChevron.classList.remove('rotate-180');
+                });
+
+                // Open clicked FAQ if it was closed
+                if (!isOpen) {
+                    answer.classList.remove('max-h-0');
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                    chevron.classList.add('rotate-180');
+                }
+            });
+        });
+
+        // Sticky CTA
+        let lastScrollY = window.scrollY;
+        let stickyCTAShown = false;
+
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+
+            if (scrolled > 30 && !stickyCTAShown) {
+                stickyCta.classList.remove('opacity-0', 'pointer-events-none');
+                stickyCTAShown = true;
+            }
+        });
+
+        // CTA buttons
+        document.querySelectorAll('.cta-primary, .cta-secondary').forEach(cta => {
+            cta.addEventListener('click', () => {
+                showToast('Demo-Modus: CTA geklickt', 'info');
+                document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Language System
+        const translations = {
+            de: {
+                'meta.title': 'SmartPack - Clever packen. Entspannt reisen.',
+                'meta.description': 'SmartPack erstellt deine individuelle Packliste – basierend auf Reiseziel, Wetter, Aktivitäten und Reisedetails.',
+                'nav.title': 'Navigation',
+                'nav.openMenu': 'Menü öffnen',
+                'nav.closeMenu': 'Menü schließen',
+                'nav.home': 'Start',
+                'nav.features': 'Funktionen',
+                'nav.howItWorks': 'So funktioniert\'s',
+                'nav.demo': 'Demo',
+                'nav.personas': 'Personas',
+                'nav.faq': 'FAQ',
+                'nav.contact': 'Kontakt',
+                'cta.startPacking': 'Packliste starten',
+                'cta.startNow': 'Packliste jetzt starten',
+                'cta.testFamily': 'Für Familien testen',
+                'hero.title': 'Clever packen',
+                'hero.subtitle': 'Entspannt reisen.',
+                'hero.description': 'SmartPack erstellt deine individuelle Packliste – basierend auf Reiseziel, Wetter, Aktivitäten und Reisedetails. In wenigen Klicks zur perfekten Vorbereitung, ohne etwas zu vergessen.',
+                'hero.socialProof': '📊 24 Mio. Reisen/Jahr in der Schweiz',
+                'hero.socialProofTooltip': 'Großes Potenzial für SmartPack',
+                'features.title': 'Warum SmartPack?',
+                'features.subtitle': 'Automatisch generierte, personalisierte Packlisten mit allem was du brauchst',
+                'toast.scenarioLoaded': 'Szenario geladen',
+                'toast.checked': 'Abgehakt',
+                'toast.removed': 'Item entfernt',
+                'toast.added': 'Hinzugefügt',
+                'toast.pdfReady': 'PDF bereit (Demo)',
+                'toast.ctaClicked': 'Demo-Modus: CTA geklickt',
+                'demo.customLabel': 'Eigenes',
+                'demo.createdWith': 'Erstellt mit SmartPack - smartpack.app',
+                'features.tab.automatic': 'Automatisch',
+                'features.tab.customize': 'Anpassen',
+                'features.tab.weather': 'Wetter & Aktivitäten',
+                'features.tab.export': 'PDF/Teilen',
+                'howItWorks.title': 'So funktioniert\'s',
+                'howItWorks.subtitle': 'In 5 einfachen Schritten zur perfekten Packliste',
+                'demo.title': 'Live-Demo',
+                'demo.subtitle': 'Teste SmartPack mit echten Szenarien',
+                'personas.title': 'Für jeden Reisetyp',
+                'personas.subtitle': 'SmartPack passt sich deinem Reisestil an',
+                'faq.title': 'Häufige Fragen',
+                'faq.subtitle': 'Alles was du über SmartPack wissen musst',
+                'footer.tagline': 'Clever packen. Entspannt reisen.',
+                'footer.copyright': '© 2024 SmartPack. Made with ❤️ for travelers.',
+                // Features section
+                'features.automatic.title': 'Vollautomatische Listen',
+                'features.automatic.description': 'Basierend auf deinem Reiseziel, der Dauer und dem Transportmittel erstellt SmartPack automatisch eine passende Grundliste.',
+                'features.automatic.exampleTitle': 'Beispiel-Generierung:',
+                'features.automatic.example1': '📍 Paris, 3 Tage → Städtetrip-Essentials',
+                'features.automatic.example2': '✈️ Flugreise → Handgepäck-optimiert',
+                'features.customize.title': 'Jederzeit anpassbar',
+                'features.customize.description': 'Füge eigene Items hinzu, entferne unnötige Sachen oder markiere wichtige Gegenstände. Deine Liste, deine Regeln.',
+                'features.customize.optionsTitle': 'Anpassungsoptionen:',
+                'features.customize.option1': '➕ Eigene Items hinzufügen',
+                'features.customize.option2': '⭐ Wichtige markieren',
+                'features.customize.option3': '🗑️ Unnötige entfernen',
+                'features.weather.title': 'Wetter-aware & aktivitätsbasiert',
+                'features.weather.description': 'SmartPack berücksichtigt das Wetter am Zielort und deine geplanten Aktivitäten für die perfekte Ausrüstung.',
+                'features.weather.considersTitle': 'Berücksichtigt:',
+                'features.weather.item1': '☀️ Wettervorhersage',
+                'features.weather.item2': '🏃‍♂️ Aktivitäten',
+                'features.weather.item3': '🏨 Unterkunftsart',
+                'features.weather.item4': '🎒 Reisestil',
+                'features.export.title': 'PDF in 1 Tap',
+                'features.export.description': 'Exportiere deine fertige Packliste als PDF zum Ausdrucken oder teile sie mit Mitreisenden per Link.',
+                'features.export.optionsTitle': 'Export-Optionen:',
+                'features.export.option1': '📄 PDF-Download',
+                'features.export.option2': '🔗 Teilbarer Link',
+                'features.export.option3': '📧 Per E-Mail senden',
+                // How it works section
+                'howItWorks.step1.title': 'Login/Registrierung',
+                'howItWorks.step2.title': 'Reise erstellen',
+                'howItWorks.step3.title': 'Aktivitäten wählen',
+                'howItWorks.step4.title': 'Liste generieren',
+                'howItWorks.step5.title': 'PDF-Export',
+                'howItWorks.step1.heading': '🔐 Schnelle Registrierung',
+                'howItWorks.step1.description': 'Erstelle ein kostenloses Konto oder logge dich ein. Deine Packlisten werden automatisch gespeichert.',
+                'howItWorks.step1.benefitsTitle': '✨ Vorteile:',
+                'howItWorks.step1.benefit1': '• Listen automatisch speichern',
+                'howItWorks.step1.benefit2': '• Auf allen Geräten verfügbar',
+                'howItWorks.step1.benefit3': '• Favoriten-Items merken',
+                'howItWorks.step2.heading': '🌍 Reise planen',
+                'howItWorks.step2.description': 'Gib dein Reiseziel, Zeitraum und Transportmittel an. SmartPack berücksichtigt diese Faktoren für deine Liste.',
+                'howItWorks.step2.inputsTitle': '📋 Angaben:',
+                'howItWorks.step2.input1': '• Zielort und Dauer',
+                'howItWorks.step2.input2': '• Transportmittel',
+                'howItWorks.step2.input3': '• Unterkunftsart',
+                'howItWorks.step3.heading': '🎯 Aktivitäten bestimmen',
+                'howItWorks.step3.description': 'Wähle aus verschiedenen Kategorien: Wandern, Strand, Business, Nachtleben, Kultur und mehr.',
+                'howItWorks.step3.categoriesTitle': '🏃‍♂️ Kategorien:',
+                'howItWorks.step3.category1': 'Wandern',
+                'howItWorks.step3.category2': 'Strand',
+                'howItWorks.step3.category3': 'Business',
+                'howItWorks.step3.category4': 'Kultur',
+                'howItWorks.step4.heading': '📝 Packliste generieren',
+                'howItWorks.step4.description': 'SmartPack erstellt automatisch deine personalisierte Liste. Du kannst sie sofort bearbeiten und anpassen.',
+                'howItWorks.step4.featuresTitle': '🤖 KI-Features:',
+                'howItWorks.step4.feature1': '• Wettervorhersage einbeziehen',
+                'howItWorks.step4.feature2': '• Gepäckbeschränkungen beachten',
+                'howItWorks.step4.feature3': '• Persönliche Präferenzen lernen',
+                'howItWorks.step5.heading': '📤 Export & Teilen',
+                'howItWorks.step5.description': 'Exportiere als PDF, teile per Link oder drucke aus. Perfekt für die Reisevorbereitung.',
+                'howItWorks.step5.optionsTitle': '📊 Optionen:',
+                'howItWorks.step5.option1': '• PDF mit SmartPack-Branding',
+                'howItWorks.step5.option2': '• Teilbarer Link für Mitreisende',
+                'howItWorks.step5.option3': '• Druckoptimierte Version',
+                'howItWorks.navigation.back': 'Zurück',
+                'howItWorks.navigation.next': 'Weiter',
+                // Demo section
+                'demo.scenarioLabel': 'Szenario wählen:',
+                'demo.scenario.backpacker': 'Backpacker Asien (2 Wochen, Wandern/Strand/Nachtmärkte)',
+                'demo.scenario.family': 'Familien-Städtetrip Paris (2 Nächte)',
+                'demo.packingListTitle': 'Deine Packliste',
+                'demo.packedLabel': 'eingepackt',
+                'demo.addItemPlaceholder': 'Eigenes Item hinzufügen...',
+                'demo.addItemButton': 'Hinzufügen',
+                'demo.exportButton': 'Als PDF exportieren (Demo)',
+                // Personas section
+                'personas.jonas.name': 'Jonas (25)',
+                'personas.jonas.type': 'Digitaler Backpacker',
+                'personas.jonas.needsTitle': 'Typische Bedürfnisse:',
+                'personas.jonas.need1': '• Schnell relevante Liste mit wenig Aufwand',
+                'personas.jonas.need2': '• Offline-Zugriff für entlegene Gebiete',
+                'personas.jonas.need3': '• Leichtgewicht-Fokus für Rucksackreisen',
+                'personas.jonas.need4': '• Flexibel anpassbar für spontane Änderungen',
+                'personas.jonas.need5': '• Export/Teilen für Travel-Buddies',
+                'personas.jonas.itemsTitle': 'Empfohlene Items:',
+                'personas.jonas.item1': 'Packwürfel',
+                'personas.jonas.item2': 'Reisehandtuch',
+                'personas.jonas.item3': 'Powerbank',
+                'personas.jonas.loadButton': 'Profil im Demo laden',
+                'personas.family.name': 'Sandra & Marc',
+                'personas.family.type': 'Familie mit 2 Kindern',
+                'personas.family.needsTitle': 'Typische Bedürfnisse:',
+                'personas.family.need1': '• Familienspezifische Items für alle Altersgruppen',
+                'personas.family.need2': '• Übersichtliche Listen für komplexe Reisen',
+                'personas.family.need3': '• Export/Teilen für Aufgabenverteilung',
+                'personas.family.need4': '• Notfall- und Gesundheits-Checklisten',
+                'personas.family.need5': '• Unterhaltung für lange Reisezeiten',
+                'personas.family.itemsTitle': 'Empfohlene Items:',
+                'personas.family.item1': 'Reiseapotheke',
+                'personas.family.item2': 'Snacks',
+                'personas.family.item3': 'Spielzeug',
+                'personas.family.loadButton': 'Profil im Demo laden'
+            },
+            en: {
+                'meta.title': 'SmartPack - Pack smart. Travel relaxed.',
+                'meta.description': 'SmartPack creates your individual packing list – based on destination, weather, activities and travel details.',
+                'nav.title': 'Navigation',
+                'nav.openMenu': 'Open menu',
+                'nav.closeMenu': 'Close menu',
+                'nav.home': 'Home',
+                'nav.features': 'Features',
+                'nav.howItWorks': 'How it works',
+                'nav.demo': 'Demo',
+                'nav.personas': 'Personas',
+                'nav.faq': 'FAQ',
+                'nav.contact': 'Contact',
+                'cta.startPacking': 'Start packing list',
+                'cta.startNow': 'Start packing list now',
+                'cta.testFamily': 'Test for families',
+                'hero.title': 'Pack smart',
+                'hero.subtitle': 'Travel relaxed.',
+                'hero.description': 'SmartPack creates your individual packing list – based on destination, weather, activities and travel details. Get perfectly prepared in just a few clicks, without forgetting anything.',
+                'hero.socialProof': '📊 24M trips/year in Switzerland',
+                'hero.socialProofTooltip': 'Great potential for SmartPack',
+                'features.title': 'Why SmartPack?',
+                'features.subtitle': 'Automatically generated, personalized packing lists with everything you need',
+                'toast.scenarioLoaded': 'Scenario loaded',
+                'toast.checked': 'Checked off',
+                'toast.removed': 'Item removed',
+                'toast.added': 'Added',
+                'toast.pdfReady': 'PDF ready (Demo)',
+                'toast.ctaClicked': 'Demo mode: CTA clicked',
+                'demo.customLabel': 'Custom',
+                'demo.createdWith': 'Created with SmartPack - smartpack.app',
+                'features.tab.automatic': 'Automatic',
+                'features.tab.customize': 'Customize',
+                'features.tab.weather': 'Weather & Activities',
+                'features.tab.export': 'PDF/Share',
+                'howItWorks.title': 'How it works',
+                'howItWorks.subtitle': 'Perfect packing list in 5 simple steps',
+                'demo.title': 'Live Demo',
+                'demo.subtitle': 'Test SmartPack with real scenarios',
+                'personas.title': 'For every travel style',
+                'personas.subtitle': 'SmartPack adapts to your travel style',
+                'faq.title': 'Frequently Asked Questions',
+                'faq.subtitle': 'Everything you need to know about SmartPack',
+                'footer.tagline': 'Pack smart. Travel relaxed.',
+                'footer.copyright': '© 2024 SmartPack. Made with ❤️ for travelers.',
+                // Features section
+                'features.automatic.title': 'Fully Automatic Lists',
+                'features.automatic.description': 'Based on your destination, duration, and transport method, SmartPack automatically creates a suitable base list.',
+                'features.automatic.exampleTitle': 'Example Generation:',
+                'features.automatic.example1': '📍 Paris, 3 days → City trip essentials',
+                'features.automatic.example2': '✈️ Flight travel → Carry-on optimized',
+                'features.customize.title': 'Always Customizable',
+                'features.customize.description': 'Add your own items, remove unnecessary things, or mark important items. Your list, your rules.',
+                'features.customize.optionsTitle': 'Customization Options:',
+                'features.customize.option1': '➕ Add custom items',
+                'features.customize.option2': '⭐ Mark important',
+                'features.customize.option3': '🗑️ Remove unnecessary',
+                'features.weather.title': 'Weather-aware & activity-based',
+                'features.weather.description': 'SmartPack considers the weather at your destination and your planned activities for perfect equipment.',
+                'features.weather.considersTitle': 'Considers:',
+                'features.weather.item1': '☀️ Weather forecast',
+                'features.weather.item2': '🏃‍♂️ Activities',
+                'features.weather.item3': '🏨 Accommodation type',
+                'features.weather.item4': '🎒 Travel style',
+                'features.export.title': 'PDF in 1 Tap',
+                'features.export.description': 'Export your finished packing list as PDF for printing or share it with fellow travelers via link.',
+                'features.export.optionsTitle': 'Export Options:',
+                'features.export.option1': '📄 PDF Download',
+                'features.export.option2': '🔗 Shareable Link',
+                'features.export.option3': '📧 Send via Email',
+                // How it works section
+                'howItWorks.step1.title': 'Login/Registration',
+                'howItWorks.step2.title': 'Create Trip',
+                'howItWorks.step3.title': 'Select Activities',
+                'howItWorks.step4.title': 'Generate List',
+                'howItWorks.step5.title': 'PDF Export',
+                'howItWorks.step1.heading': '🔐 Quick Registration',
+                'howItWorks.step1.description': 'Create a free account or log in. Your packing lists are automatically saved.',
+                'howItWorks.step1.benefitsTitle': '✨ Benefits:',
+                'howItWorks.step1.benefit1': '• Automatically save lists',
+                'howItWorks.step1.benefit2': '• Available on all devices',
+                'howItWorks.step1.benefit3': '• Remember favorite items',
+                'howItWorks.step2.heading': '🌍 Plan Trip',
+                'howItWorks.step2.description': 'Enter your destination, timeframe, and transportation. SmartPack considers these factors for your list.',
+                'howItWorks.step2.inputsTitle': '📋 Details:',
+                'howItWorks.step2.input1': '• Destination and duration',
+                'howItWorks.step2.input2': '• Transportation method',
+                'howItWorks.step2.input3': '• Accommodation type',
+                'howItWorks.step3.heading': '🎯 Select Activities',
+                'howItWorks.step3.description': 'Choose from various categories: Hiking, Beach, Business, Nightlife, Culture and more.',
+                'howItWorks.step3.categoriesTitle': '🏃‍♂️ Categories:',
+                'howItWorks.step3.category1': 'Hiking',
+                'howItWorks.step3.category2': 'Beach',
+                'howItWorks.step3.category3': 'Business',
+                'howItWorks.step3.category4': 'Culture',
+                'howItWorks.step4.heading': '📝 Generate Packing List',
+                'howItWorks.step4.description': 'SmartPack automatically creates your personalized list. You can edit and customize it immediately.',
+                'howItWorks.step4.featuresTitle': '🤖 AI Features:',
+                'howItWorks.step4.feature1': '• Include weather forecast',
+                'howItWorks.step4.feature2': '• Consider baggage restrictions',
+                'howItWorks.step4.feature3': '• Learn personal preferences',
+                'howItWorks.step5.heading': '📤 Export & Share',
+                'howItWorks.step5.description': 'Export as PDF, share via link, or print. Perfect for travel preparation.',
+                'howItWorks.step5.optionsTitle': '📊 Options:',
+                'howItWorks.step5.option1': '• PDF with SmartPack branding',
+                'howItWorks.step5.option2': '• Shareable link for fellow travelers',
+                'howItWorks.step5.option3': '• Print-optimized version',
+                'howItWorks.navigation.back': 'Back',
+                'howItWorks.navigation.next': 'Next',
+                // Demo section
+                'demo.scenarioLabel': 'Choose scenario:',
+                'demo.scenario.backpacker': 'Asia Backpacker (2 weeks, Hiking/Beach/Night markets)',
+                'demo.scenario.family': 'Family City Trip Paris (2 nights)',
+                'demo.packingListTitle': 'Your Packing List',
+                'demo.packedLabel': 'packed',
+                'demo.addItemPlaceholder': 'Add custom item...',
+                'demo.addItemButton': 'Add',
+                'demo.exportButton': 'Export as PDF (Demo)',
+                // Personas section
+                'personas.jonas.name': 'Jonas (25)',
+                'personas.jonas.type': 'Digital Backpacker',
+                'personas.jonas.needsTitle': 'Typical Needs:',
+                'personas.jonas.need1': '• Quick relevant list with minimal effort',
+                'personas.jonas.need2': '• Offline access for remote areas',
+                'personas.jonas.need3': '• Lightweight focus for backpacking',
+                'personas.jonas.need4': '• Flexibly adaptable for spontaneous changes',
+                'personas.jonas.need5': '• Export/Share for travel buddies',
+                'personas.jonas.itemsTitle': 'Recommended Items:',
+                'personas.jonas.item1': 'Packing cubes',
+                'personas.jonas.item2': 'Travel towel',
+                'personas.jonas.item3': 'Power bank',
+                'personas.jonas.loadButton': 'Load profile in demo',
+                'personas.family.name': 'Sandra & Marc',
+                'personas.family.type': 'Family with 2 children',
+                'personas.family.needsTitle': 'Typical Needs:',
+                'personas.family.need1': '• Family-specific items for all age groups',
+                'personas.family.need2': '• Clear lists for complex trips',
+                'personas.family.need3': '• Export/Share for task distribution',
+                'personas.family.need4': '• Emergency and health checklists',
+                'personas.family.need5': '• Entertainment for long travel times',
+                'personas.family.itemsTitle': 'Recommended Items:',
+                'personas.family.item1': 'Travel pharmacy',
+                'personas.family.item2': 'Snacks',
+                'personas.family.item3': 'Toys',
+                'personas.family.loadButton': 'Load profile in demo'
+            }
+        };
+
+        let currentLang = 'de';
+
+        function updateLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // Update attributes with data-i18n-attr
+            document.querySelectorAll('[data-i18n-attr]').forEach(element => {
+                const attr = element.getAttribute('data-i18n-attr');
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.setAttribute(attr, translations[lang][key]);
+                }
+            });
+
+            // Update title and meta tags
+            if (translations[lang]['meta.title']) {
+                document.title = translations[lang]['meta.title'];
+            }
+
+            // Update language switch buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('lang-' + lang).classList.add('active');
+
+            // Re-render dynamic content with new language
+            renderPackingList();
+        }
+
+        // Language switch event listeners
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                updateLanguage(lang);
+            });
+        });
+
+        // Update toast messages and dynamic content based on current language
+        function showToast(messageKey, type = 'info') {
+            const message = translations[currentLang][messageKey] || messageKey;
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+
+            toast.className = `${bgColor} text-white px-4 py-2 rounded-lg shadow-lg transform translate-x-full transition-all duration-300`;
+            toast.textContent = message;
+
+            toastContainer.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 10);
+
+            // Remove after delay
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (toastContainer.contains(toast)) {
+                        toastContainer.removeChild(toast);
+                    }
+                }, 300);
+            }, 2000);
+        }
+
+        // Update renderPackingList to use translations
+        function renderPackingList() {
+            const checkedCount = currentItems.filter(item => item.checked).length;
+            const totalCount = currentItems.length;
+
+            document.getElementById('checked-count').textContent = checkedCount;
+            document.getElementById('total-count').textContent = totalCount;
+            document.getElementById('progress-bar').style.width = `${(checkedCount / totalCount) * 100}%`;
+
+            const customLabel = translations[currentLang]['demo.customLabel'];
+
+            packingList.innerHTML = currentItems.map((item, index) => `
+                <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <input
+                        type="checkbox"
+                        id="item-${index}"
+                        class="w-5 h-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded"
+                        ${item.checked ? 'checked' : ''}
+                        onchange="toggleItem(${index})"
+                    />
+                    <label for="item-${index}" class="flex-1 cursor-pointer ${item.checked ? 'line-through text-gray-500' : ''}">
+                        ${item.name}
+                        ${item.custom ? ` <span class="text-xs bg-brand-secondary text-white px-2 py-0.5 rounded ml-2">${customLabel}</span>` : ''}
+                    </label>
+                    ${item.custom ? `
+                        <button onclick="removeItem(${index})" class="text-red-500 hover:text-red-700 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Update functions to use translation keys
+        function toggleItem(index) {
+            currentItems[index].checked = !currentItems[index].checked;
+            renderPackingList();
+
+            if (currentItems[index].checked) {
+                showToast('toast.checked', 'success');
+            }
+        }
+
+        function removeItem(index) {
+            currentItems.splice(index, 1);
+            renderPackingList();
+            showToast('toast.removed', 'info');
+        }
+
+        function addCustomItem() {
+            const itemName = customItemInput.value.trim();
+            if (!itemName) return;
+
+            currentItems.push({
+                name: itemName,
+                custom: true,
+                category: 'custom'
+            });
+
+            customItemInput.value = '';
+            renderPackingList();
+            showToast('toast.added', 'success');
+        }
+
+        // Update load scenario function
+        function loadScenario(scenarioKey) {
+            const scenario = scenarios[scenarioKey];
+            if (!scenario) return;
+
+            currentItems = [...scenario.items];
+            renderPackingList();
+            showToast('toast.scenarioLoaded', 'success');
+        }
+
+        // Update PDF export function
+        exportPdfBtn.addEventListener('click', () => {
+            // Prepare print content
+            const printList = document.getElementById('print-packing-list');
+            const scenario = scenarios[demoScenario.value];
+            const createdWithText = translations[currentLang]['demo.createdWith'];
+
+            printList.innerHTML = `
+                <h2 class="text-xl font-semibold mb-4">${scenario.title}</h2>
+                <div class="space-y-2">
+                    ${currentItems.map(item => `
+                        <div class="flex items-center space-x-2 p-2 border-b border-gray-200">
+                            <div class="w-4 h-4 border border-gray-400 rounded ${item.checked ? 'bg-brand-primary' : ''}"></div>
+                            <span class="${item.checked ? 'line-through text-gray-500' : ''}">${item.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mt-6 text-center text-sm text-gray-500">
+                    ${createdWithText}
+                </div>
+            `;
+
+            // Trigger print
+            setTimeout(() => {
+                window.print();
+                showToast('toast.pdfReady', 'success');
+            }, 100);
+        });
+
+        // Update CTA button click handler
+        document.querySelectorAll('.cta-primary, .cta-secondary').forEach(cta => {
+            cta.addEventListener('click', () => {
+                showToast('toast.ctaClicked', 'info');
+                document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Initialize
+        loadScenario('backpacker');
+
+        // Make functions available globally for onclick handlers
+        window.toggleItem = toggleItem;
+        window.removeItem = removeItem;
+    </script>
+
+</body>
+</html>
