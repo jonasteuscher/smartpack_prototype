@@ -18,11 +18,6 @@ SmartPack is a prototype web app that helps you create personalized packing list
 
 No build steps or dependencies required.
 
-## Customization
-
-- Edit `index.html` to change branding, colors, or add new features.
-- All styles and logic are contained in the HTML file for easy prototyping.
-
 ## Technologies Used
 
 - HTML5, CSS3 (with Tailwind CSS)
